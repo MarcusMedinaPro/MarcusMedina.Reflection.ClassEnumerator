@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="../samples/MMPClassEnumerator.Demo/MMPClassEnumerator.Demo.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="../../../Downloads/Icons8-Ios7-Programming-Cls.ico" />
+    <File Path="License.txt" />
+    <File Path="MMPClassEnumerator/Icons8-Ios7-Programming-Cls.ico" />
+    <File Path="Readme.md" />
+  </Folder>
+  <Project Path="src/MMPClassEnumerator.Tests/MMPClassEnumerator.Tests.csproj" />
+  <Project Path="src/MMPClassEnumerator/MMPClassEnumerator.csproj" />
+</Solution>

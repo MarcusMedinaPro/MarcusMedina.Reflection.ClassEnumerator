@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>14.0</LangVersion>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+		<PackageId>MarcusMedina.Reflection.ClassEnumerator</PackageId>
+		<Version>2.0.1</Version>
+		<AssemblyVersion>2.0.1</AssemblyVersion>
+		<FileVersion>2.0.1</FileVersion>
+
+		<Authors>Marcus Medina</Authors>
+		<Company>MarcusMedinaPro</Company>
+		<Copyright>Copyright (c) Marcus Medina, 2021-2026.</Copyright>
+		<Description>Enumerate classes by interface or inheritance using reflection for .NET 10+</Description>
+		<PackageProjectUrl>https://github.com/MarcusMedinaPro/MarcusMedina.ClassEnumerator</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/MarcusMedinaPro/MarcusMedina.ClassEnumerator</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+
+		<RootNamespace>MarcusMedinaPro.ClassEnumerator</RootNamespace>
+		<PackageTags>reflection;classes;interfaces;list;enumerate;c#;csharp;dotnet;core;.net;net10;plugin</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="../../../README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="../../../assets/open-source.svg">
+	    <Pack>True</Pack>
+	    <PackagePath>assets\</PackagePath>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>

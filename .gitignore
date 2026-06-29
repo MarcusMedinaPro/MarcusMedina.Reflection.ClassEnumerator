@@ -1,0 +1,82 @@
+# ====================================
+# .NET NuGet Package .gitignore
+# Standard for all Marcus Medina packages
+# ====================================
+
+## Build Outputs
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+## NuGet Packages
+*.nupkg
+*.snupkg
+packages/
+artifacts/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Visual Studio
+.vs/
+.vscode/
+*.vspscc
+*.vssscc
+*.pidb
+*.svclog
+*.scc
+
+## ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+## Test Results
+TestResults/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.coverage
+*.coveragexml
+coverage/
+
+## Rider
+.idea/
+*.sln.iml
+
+## macOS
+.DS_Store
+
+## Windows
+Thumbs.db
+Desktop.ini
+
+## Temporary files
+*.tmp
+*.temp
+*.log
+*.swp
+*~
+
+## NuGet metadata
+project.lock.json
+project.fragment.lock.json
+
+## StyleCop
+StyleCopReport.xml
+
+## Backup files
+*.bak
+*.orig
+
+## Node (if applicable)
+node_modules/
