@@ -5,7 +5,7 @@
 [![C#](https://img.shields.io/badge/C%23-14.0-239120?style=for-the-badge&logo=csharp&logoColor=white)](#)
 [![.NET](https://img.shields.io/badge/.NET-10.0+-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-![Open Source](assets/open-source.svg)
+![Open Source](https://raw.githubusercontent.com/MarcusMedinaPro/MarcusMedina.Reflection.ClassEnumerator/main/assets/open-source.svg)
 [![Build](https://img.shields.io/github/actions/workflow/status/MarcusMedinaPro/MarcusMedina.ClassEnumerator/release.yml?branch=main&label=Build&style=for-the-badge&logo=github)](https://github.com/MarcusMedinaPro/MarcusMedina.ClassEnumerator/actions)
 [![Signed](https://img.shields.io/badge/Signed-Sigstore-green?style=for-the-badge&logo=linux)](https://docs.sigstore.dev)
 
@@ -334,4 +334,3 @@ cosign verify-blob <package.nupkg> \
 ```
 
 Expected output: `Verified OK`
-
