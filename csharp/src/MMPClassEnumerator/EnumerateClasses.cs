@@ -228,7 +228,7 @@ public static class EnumerateClasses<T>
         {
             return (T?)Activator.CreateInstance(type);
         }
-        catch
+        catch (Exception ex) when (ex is MissingMethodException or TargetInvocationException or TypeLoadException)
         {
             // Silently ignore types that can't be instantiated
             return default;
