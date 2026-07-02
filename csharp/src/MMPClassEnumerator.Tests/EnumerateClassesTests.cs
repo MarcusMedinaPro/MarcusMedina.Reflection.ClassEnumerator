@@ -35,7 +35,7 @@ file abstract class BaseService
     public abstract string ServiceName { get; }
 }
 
-file sealed class EmailService : BaseService
+file class EmailService : BaseService
 {
     public override string ServiceName => "Email";
 }
@@ -43,6 +43,11 @@ file sealed class EmailService : BaseService
 file sealed class SmsService : BaseService
 {
     public override string ServiceName => "SMS";
+}
+
+// Grandchild class — two levels below BaseService, not a direct child
+file sealed class PremiumEmailService : EmailService
+{
 }
 
 // Class without parameterless constructor (should be excluded)
@@ -204,5 +209,67 @@ public class EnumerateClassesTests
 
         // Assert - should not contain InvalidPlugin (requires constructor parameter)
         Assert.DoesNotContain(result, p => p.GetType() == typeof(InvalidPlugin));
+    }
+
+    [Fact]
+    public void GetClassesByInterface_WithCache_ReturnsSameInstancesOnSubsequentCalls()
+    {
+        // Arrange
+        EnumerateClasses<ITestPlugin>.ClearCache();
+
+        // Act
+        var first = EnumerateClasses<ITestPlugin>.GetClassesByInterface(useCache: true).ToList();
+        var second = EnumerateClasses<ITestPlugin>.GetClassesByInterface(useCache: true).ToList();
+
+        // Assert - cached call must return the exact same instances, not freshly created ones
+        Assert.Equal(first.Count, second.Count);
+        for (int i = 0; i < first.Count; i++)
+            Assert.Same(first[i], second[i]);
+    }
+
+    [Fact]
+    public void ClearCache_ForcesNewInstancesOnNextCachedCall()
+    {
+        // Arrange
+        EnumerateClasses<ITestPlugin>.ClearCache();
+        var beforeClear = EnumerateClasses<ITestPlugin>.GetClassesByInterface(useCache: true).ToList();
+
+        // Act
+        EnumerateClasses<ITestPlugin>.ClearCache();
+        var afterClear = EnumerateClasses<ITestPlugin>.GetClassesByInterface(useCache: true).ToList();
+
+        // Assert - same types, but new instances since the cache was cleared
+        Assert.Equal(beforeClear.Count, afterClear.Count);
+        for (int i = 0; i < beforeClear.Count; i++)
+            Assert.NotSame(beforeClear[i], afterClear[i]);
+    }
+
+    [Fact]
+    public void ListClassesByInterface_WithCache_ReturnsSameTypeListOnSubsequentCalls()
+    {
+        // Arrange
+        EnumerateClasses<ITestPlugin>.ClearCache();
+
+        // Act
+        var first = EnumerateClasses<ITestPlugin>.ListClassesByInterface(useCache: true);
+        var second = EnumerateClasses<ITestPlugin>.ListClassesByInterface(useCache: true);
+
+        // Assert - the exact same cached IEnumerable<Type> instance should come back
+        Assert.Same(first, second);
+    }
+
+    [Fact]
+    public void GetClassesByInheritance_DoesNotFindGrandchildClasses()
+    {
+        // GetClassesByInheritance only matches type.BaseType == typeof(T) directly —
+        // a class two levels down the hierarchy is NOT discovered. This is a real,
+        // documented limitation, not a bug: it's pinned here so a future change to
+        // the matching logic is a conscious decision, not an accidental regression.
+
+        // Act
+        var result = EnumerateClasses<BaseService>.GetClassesByInheritance().ToList();
+
+        // Assert - PremiumEmailService derives from EmailService (not BaseService directly)
+        Assert.DoesNotContain(result, s => s.GetType() == typeof(PremiumEmailService));
     }
 }
