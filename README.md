@@ -6,13 +6,15 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0+-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 ![Open Source](https://raw.githubusercontent.com/MarcusMedinaPro/MarcusMedina.Reflection.ClassEnumerator/main/assets/open-source.svg)
-[![Build](https://img.shields.io/github/actions/workflow/status/MarcusMedinaPro/MarcusMedina.ClassEnumerator/release.yml?branch=main&label=Build&style=for-the-badge&logo=github)](https://github.com/MarcusMedinaPro/MarcusMedina.ClassEnumerator/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/MarcusMedinaPro/MarcusMedina.Reflection.ClassEnumerator/release.yml?branch=main&label=Build&style=for-the-badge&logo=github)](https://github.com/MarcusMedinaPro/MarcusMedina.Reflection.ClassEnumerator/actions)
 [![Signed](https://img.shields.io/badge/Signed-Sigstore-green?style=for-the-badge&logo=linux)](https://docs.sigstore.dev)
 
 
 
 A simple utility for discovering and instantiating classes by interface or inheritance using
 reflection. Perfect for plugin systems, dynamic class loading, and educational purposes.
+
+> **Story:** _TODO — ask Marcus for the real background behind this package._
 
 ## Overview
 
@@ -319,7 +321,7 @@ Full source available on [GitHub](https://github.com/MarcusMedinaPro/MMPClassEnu
 **Made with ❤️ for educational purposes**
 
 ---
-_For metadata and SEO keywords, see [SEO.md](SEO.md)._
+_For metadata and SEO keywords, see [SEO.md](https://github.com/MarcusMedinaPro/MarcusMedina.Reflection.ClassEnumerator/blob/main/SEO.md)._
 ## Package integrity
 
 All releases are signed with [cosign](https://docs.sigstore.dev) (Sigstore keyless signing).
