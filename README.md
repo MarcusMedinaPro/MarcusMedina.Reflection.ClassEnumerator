@@ -14,7 +14,9 @@
 A simple utility for discovering and instantiating classes by interface or inheritance using
 reflection. Perfect for plugin systems, dynamic class loading, and educational purposes.
 
-> **Story:** _TODO — ask Marcus for the real background behind this package._
+> This one came to be in 2022, while I was trying to explain to students how plugin systems actually work under the hood. Talking about "find every class that implements this interface" in the abstract wasn't landing — I needed something they could run and see immediately. It's maybe not the prettiest solution reflection has ever produced, but it did exactly what I needed: a simple way to list every class implementing a given interface.
+>
+> In this case, I wanted the plugin-discovery idea to be something students could see working in five lines, not something buried in a framework they'd have to trust blindly.
 
 ## Overview
 
