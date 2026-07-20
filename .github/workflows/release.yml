@@ -1,5 +1,10 @@
 name: 🚀 Release - Full Pipeline
 
+# ⚙️ SETUP: Replace the two variables below after using this template
+env:
+  SOLUTION_FILE: csharp/MMPClassEnumerator.slnx        # e.g. csharp/MyPackage.slnx
+  PROJECT_PATH: csharp/src/MMPClassEnumerator/MMPClassEnumerator.csproj  # e.g. csharp/src/MyPackage/MyPackage.csproj
+
 on:
   push:
     tags: ["v*"]
@@ -7,44 +12,39 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  security-events: write
-  packages: write
-  id-token: write
+  contents: read
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     name: 1️⃣ Build & Test
+    permissions:
+      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore csharp/MMPClassEnumerator.slnx
+      - run: dotnet restore ${{ env.SOLUTION_FILE }}
+        name: Restore
 
-      - name: Build
-        run: dotnet build csharp/MMPClassEnumerator.slnx --configuration Release --no-restore
+      - run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
+        name: Build
 
-      - name: Test
-        run: dotnet test csharp/MMPClassEnumerator.slnx --configuration Release --no-build --verbosity normal --logger trx
+      - run: dotnet test ${{ env.SOLUTION_FILE }} --configuration Release --no-build --verbosity normal --logger trx
+        name: Test
 
-      - name: Pack
-        run: dotnet pack csharp/src/MMPClassEnumerator/MMPClassEnumerator.csproj --configuration Release --no-build --output ./nupkgs
+      - run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --no-build --output ./nupkgs
+        name: Pack
 
-      - name: Upload unsigned packages
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: unsigned-packages
           path: ./nupkgs/*.nupkg
 
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results
@@ -54,38 +54,35 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     name: 2️⃣ Code Quality
+    permissions:
+      contents: read
+      security-events: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore csharp/MMPClassEnumerator.slnx
+      - run: dotnet restore ${{ env.SOLUTION_FILE }}
+        name: Restore
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+      - uses: github/codeql-action/init@v3
         with:
           languages: csharp
           queries: security-extended,security-and-quality
 
-      - name: Build for CodeQL
-        run: dotnet build csharp/MMPClassEnumerator.slnx --configuration Release --no-restore
+      - run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
+        name: Build for CodeQL
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+      - uses: github/codeql-action/analyze@v3
         continue-on-error: true
 
-      - name: Dependency Vulnerability Scan
-        run: |
-          dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerability-report.txt
+      - run: dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerability-report.txt
+        name: Dependency Vulnerability Scan
         continue-on-error: true
 
-      - name: Upload quality reports
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: quality-reports
@@ -98,16 +95,13 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
     steps:
-      - name: Download unsigned packages
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: unsigned-packages
           path: ./unsigned
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+      - uses: sigstore/cosign-installer@v3
 
       - name: Sign packages
         run: |
@@ -121,10 +115,8 @@ jobs:
         run: |
           cd unsigned
           sha256sum *.nupkg > SHA256SUMS.txt
-          cat SHA256SUMS.txt
 
-      - name: Upload signed packages
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: signed-packages
           path: |
@@ -132,30 +124,75 @@ jobs:
             ./unsigned/*.sigstore.json
             ./unsigned/SHA256SUMS.txt
 
-  publish-nuget:
+  antivirus-scan:
     needs: package-signing
     runs-on: ubuntu-latest
-    name: 4️⃣ Publish to NuGet.org
-    if: startsWith(github.ref, 'refs/tags/v')
+    name: 4️⃣ Antivirus Scan
+    permissions:
+      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Download signed packages
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: signed-packages
           path: ./packages
 
+      - name: VirusTotal scan
+        uses: crazy-max/ghaction-virustotal@v4
+        id: virustotal
+        continue-on-error: true
+        with:
+          vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          files: ./packages/*.nupkg
+          vt_monitor: false
+
+      - name: Save scan summary
+        run: |
+          {
+            echo "VirusTotal scan - $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo "Outcome: ${{ steps.virustotal.outcome }}"
+            echo "Analysis: ${{ steps.virustotal.outputs.analysis || 'n/a' }}"
+            echo
+            echo "Advisory, not a hard gate - a single obscure AV engine flagging a freshly"
+            echo "built .NET assembly is a common false positive. Review the analysis link"
+            echo "above before publishing if the outcome is anything but a clean pass."
+          } > virustotal-summary.txt
+          cat virustotal-summary.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scan-results
+          path: virustotal-summary.txt
+
+  publish-nuget:
+    needs: antivirus-scan
+    runs-on: ubuntu-latest
+    name: 5️⃣ Publish to NuGet.org
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: signed-packages
+          path: ./packages
+
+      - name: NuGet login (OIDC -> temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: Publish to NuGet.org
         run: |
           dotnet nuget push ./packages/*.nupkg \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --api-key ${{ steps.login.outputs.NUGET_API_KEY }} \
             --source https://api.nuget.org/v3/index.json \
             --skip-duplicate
 
