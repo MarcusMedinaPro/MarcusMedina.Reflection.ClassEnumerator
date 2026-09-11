@@ -1,80 +1,137 @@
-name: 🔍 Test - Unit Tests + Code Quality
+# Full test-svit (unit + e2e + action-tester) på test-grenen — körs innan merge till main.
+# Säkerhetsscanners (security-code-scan.yml, osv-scanner.yml) körs INTE här längre —
+# de flyttades till main/tagg för att undvika att skanna kod som ändå kan ändras
+# innan publicering. Se develop.yml för det snabbare kodkvalitets-mellansteget.
+
+name: 🔍 Test — Full Quality Gate
 
 on:
   push:
     branches: [test]
   pull_request:
     branches: [test]
+  workflow_dispatch:
 
 permissions:
   contents: read
   security-events: write
 
+env:
+  DOTNET_VERSION: '10.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     name: 1️⃣ Build & Test
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore dependencies
-        run: dotnet restore csharp/MMPClassEnumerator.slnx
+      - name: Restore
+        run: dotnet restore
+        working-directory: ./csharp
 
       - name: Build
-        run: dotnet build csharp/MMPClassEnumerator.slnx --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore
+        working-directory: ./csharp
 
       - name: Test
-        run: dotnet test csharp/MMPClassEnumerator.slnx --configuration Release --no-build --verbosity normal --logger trx
+        run: |
+          dotnet test \
+            --configuration Release \
+            --no-build \
+            --verbosity normal \
+            --logger trx
+        working-directory: ./csharp
 
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-results
           path: '**/TestResults/**/*.trx'
 
-  quality-gate:
+  test-matrix:
     needs: build-and-test
-    runs-on: ubuntu-latest
-    name: 2️⃣ Code Quality
+    name: 2️⃣ Cross-platform (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore dependencies
-        run: dotnet restore csharp/MMPClassEnumerator.slnx
+      - name: Restore & Test
+        run: dotnet test --configuration Release
+        working-directory: ./csharp
+
+  codeql:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    name: 3️⃣ CodeQL
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: ./csharp
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: csharp
           queries: security-extended,security-and-quality
 
       - name: Build for CodeQL
-        run: dotnet build csharp/MMPClassEnumerator.slnx --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore
+        working-directory: ./csharp
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
 
-      - name: Dependency Vulnerability Scan
-        run: |
-          dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerability-report.txt
-        continue-on-error: true
+  pack:
+    needs: [test-matrix, codeql]
+    runs-on: ubuntu-latest
+    name: 4️⃣ Pack
 
-      - name: Upload quality reports
-        uses: actions/upload-artifact@v4
-        if: always()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
         with:
-          name: quality-reports
-          path: vulnerability-report.txt
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Pack
+        run: dotnet pack --configuration Release --output ./artifacts
+        working-directory: ./csharp
+
+      - name: Upload package
+        uses: actions/upload-artifact@v7
+        with:
+          name: nuget-package
+          path: ./csharp/artifacts/*.nupkg
