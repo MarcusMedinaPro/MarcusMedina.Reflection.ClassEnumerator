@@ -16,8 +16,8 @@
 		<Company>MarcusMedinaPro</Company>
 		<Copyright>Copyright (c) Marcus Medina, 2021-2026.</Copyright>
 		<Description>Enumerate classes by interface or inheritance using reflection for .NET 10+</Description>
-		<PackageProjectUrl>https://github.com/MarcusMedinaPro/MarcusMedina.ClassEnumerator</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/MarcusMedinaPro/MarcusMedina.ClassEnumerator</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/MarcusMedinaPro/MarcusMedina.Reflection.ClassEnumerator/wiki</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/MarcusMedinaPro/MarcusMedina.Reflection.ClassEnumerator</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 
 		<RootNamespace>MarcusMedinaPro.ClassEnumerator</RootNamespace>
