@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>14.0</LangVersion>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
 		<PackageId>MarcusMedina.Reflection.ClassEnumerator</PackageId>
-		<Version>2.0.1</Version>
+		<Version>2.0.3</Version>
 		<AssemblyVersion>2.0.1</AssemblyVersion>
 		<FileVersion>2.0.1</FileVersion>
 
@@ -16,8 +16,8 @@
 		<Company>MarcusMedinaPro</Company>
 		<Copyright>Copyright (c) Marcus Medina, 2021-2026.</Copyright>
 		<Description>Enumerate classes by interface or inheritance using reflection for .NET 10+</Description>
-		<PackageProjectUrl>https://github.com/MarcusMedinaPro/MarcusMedina.ClassEnumerator</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/MarcusMedinaPro/MarcusMedina.ClassEnumerator</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/MarcusMedinaPro/MarcusMedina.Reflection.ClassEnumerator/wiki</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/MarcusMedinaPro/MarcusMedina.Reflection.ClassEnumerator</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 
 		<RootNamespace>MarcusMedinaPro.ClassEnumerator</RootNamespace>
@@ -45,7 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="icon.png">
+		<None Include="icon.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
