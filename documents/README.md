@@ -28,7 +28,7 @@ and create instances automatically using reflection.
 
 ## Requirements
 
-- .NET 8.0 or higher
+- .NET 10.0 or higher
 
 ## Installation
 
